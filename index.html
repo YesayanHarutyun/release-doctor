@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Release Doctor: why is Google Play blocking my Android update?</title>
+  <meta name="description" content="Drop your APK or AAB to see which library breaks Google Play's 16 KB page size rule or the target API 36 requirement, which plugin or SDK ships it, and the version that fixes it. Runs 100% in your browser.">
+  <meta property="og:title" content="Release Doctor: why is Google Play blocking my update?">
+  <meta property="og:description" content="Names the exact library, the plugin that ships it, and the version that fixes it. Your app never leaves your computer.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f766e'/%3E%3Cpath d='M9 16.5l4.5 4.5L23 11.5' stroke='white' stroke-width='3.2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="src/ui.js"></script>
+</head>
+<body>
+  <header class="top">
+    <div class="wrap top-inner">
+      <a class="brand" href="./">
+        <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="currentColor"/><path d="M9 16.5l4.5 4.5L23 11.5" stroke="var(--bg)" stroke-width="3.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Release Doctor</span>
+      </a>
+      <nav class="top-nav">
+        <a href="#how">How it works</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero wrap">
+      <p class="eyebrow">Google Play · 16 KB page sizes · Target API 36</p>
+      <h1>Find out exactly why Google Play is blocking your update.</h1>
+      <p class="lede">Drop your APK or AAB. Release Doctor names the library that breaks the rules, the plugin or SDK that ships it, and the version that fixes it.</p>
+
+      <label class="drop" id="drop" for="file">
+        <input type="file" id="file" accept=".apk,.aab,.aar,.so,.zip" hidden>
+        <svg class="drop-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="M7 8l5-5 5 5"/><path d="M20 15v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-4"/></svg>
+        <span class="drop-title">Drop your <b>.aab</b> or <b>.apk</b> here</span>
+        <span class="drop-sub">or click to choose a file · .aar and .so work too</span>
+      </label>
+      <p class="privacy">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+        Runs entirely in your browser. Your app is never uploaded.
+      </p>
+      <p class="sample-row">No build at hand? <button type="button" class="linkish" id="sample">See an example report</button></p>
+    </section>
+
+    <section id="results" class="wrap results" aria-live="polite" hidden></section>
+
+    <section id="how" class="wrap how">
+      <h2>How it works</h2>
+      <ol class="steps">
+        <li><b>Reads your package locally.</b> We open the APK, AAB or AAR in your browser and read only the native library headers and the manifest.</li>
+        <li><b>Checks what Google Play checks.</b> 16 KB alignment of every 64-bit library, packaging of uncompressed libraries, and your target API level.</li>
+        <li><b>Tells you what to change.</b> Each failing library is matched to the plugin or SDK that ships it, with the version that fixes it and the command to run.</li>
+      </ol>
+    </section>
+
+    <section id="faq" class="wrap faq">
+      <h2>Questions</h2>
+      <details>
+        <summary>Why does Google Play say my app doesn't support 16 KB memory page sizes?</summary>
+        <p>Newer Android devices can use 16 KB memory pages. Native libraries (.so files) built with the old 4 KB alignment can't load on them, so Google Play rejects app updates whose 64-bit libraries aren't 16 KB-aligned. The fix is almost always to upgrade the plugin or SDK that ships the library, or to rebuild your own native code with NDK r28 or newer.</p>
+      </details>
+      <details>
+        <summary>Which apps are affected?</summary>
+        <p>Only apps that ship native code. That includes most Flutter, React Native and Unity apps, and any app that uses libraries such as CameraX, ML Kit, SQLite, TensorFlow Lite or FFmpeg. Pure Kotlin or Java apps without .so files are not affected.</p>
+      </details>
+      <details>
+        <summary>What is the target API 36 requirement?</summary>
+        <p>Since 31 August 2026, new apps and app updates on Google Play must target Android 16 (API level 36). Apps that targeted older versions can stay on the store, but you can't publish updates until you raise the target.</p>
+      </details>
+      <details>
+        <summary>Is my file uploaded anywhere?</summary>
+        <p>No. The file is read with your browser's built-in APIs and never leaves your computer. Once the page has loaded, the scan even works offline.</p>
+      </details>
+      <details>
+        <summary>Play Console still complains after I fixed everything.</summary>
+        <p>Scan the exact build you uploaded. In Play Console, open App bundle explorer, pick the release and check "Memory page size"; it lists the libraries Google flagged. Packaging problems with uncompressed libraries also depend on your Android Gradle Plugin version (8.5.1 or newer handles them).</p>
+      </details>
+      <details>
+        <summary>My library says "not in our database yet".</summary>
+        <p>We add libraries as they show up in real reports. The fix steps shown for unknown libraries tell you how to find which dependency ships the file.</p>
+      </details>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <div class="wrap">
+      <p>Release Doctor is an independent tool and is not affiliated with or endorsed by Google. Google Play and Android are trademarks of Google LLC. Results are a best-effort check; Play Console is the final authority.</p>
+    </div>
+  </footer>
+</body>
+</html>

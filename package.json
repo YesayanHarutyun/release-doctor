@@ -1,0 +1,11 @@
+{
+  "name": "release-doctor",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Find out exactly why Google Play blocks your Android update (16 KB page size, target API) and how to fix it. Runs in the browser.",
+  "scripts": {
+    "test": "node test/run.mjs",
+    "serve": "node serve.mjs"
+  }
+}
